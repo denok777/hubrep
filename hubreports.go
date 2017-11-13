@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 )
 
@@ -15,16 +14,12 @@ func init() {
 }
 
 func main() {
-	files, err := ioutil.ReadDir(ReportsDir)
+	files, err := FileList(ReportsDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-
-		fmt.Println(file.Name())
+		fmt.Printf("%s -- %s\n", file.Name(), file.Time())
 	}
 
 	fmt.Println()
