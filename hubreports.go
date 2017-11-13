@@ -1,15 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 )
 
-func main() {
-	dir := "/tmp/test/"
+var ReportsDir string
 
-	files, err := ioutil.ReadDir(dir)
+func init() {
+	flag.StringVar(&ReportsDir, "p", "path", "reports directory path")
+	flag.Parse()
+}
+
+func main() {
+	files, err := ioutil.ReadDir(ReportsDir)
 	if err != nil {
 		log.Fatal(err)
 	}
