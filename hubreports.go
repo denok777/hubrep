@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
+	"net/http"
 )
 
 var ReportsDir string
@@ -14,14 +14,10 @@ func init() {
 }
 
 func main() {
-	files, err := FileList(ReportsDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, file := range files {
-		fmt.Printf("%s -- %s\n", file.Name(), file.Time())
-	}
+	http.HandleFunc("/list", listHandler)
 
-	fmt.Println()
-	fmt.Println("ok")
+	err := http.ListenAndServe(":4242", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
