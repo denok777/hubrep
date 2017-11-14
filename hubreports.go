@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gorilla/context"
 	"log"
 	"net/http"
 )
@@ -17,11 +18,12 @@ func init() {
 }
 
 func main() {
+	http.Handle("/login", http.HandlerFunc(login))
 	http.Handle("/list", verify(listHandler))
 
 	err := http.ListenAndServe(
 		fmt.Sprintf(":%d", Port),
-		nil,
+		context.ClearHandler(http.DefaultServeMux),
 	)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
