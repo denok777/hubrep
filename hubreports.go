@@ -6,15 +6,28 @@ import (
 	"github.com/gorilla/context"
 	"log"
 	"net/http"
+	"os"
 )
 
 var ReportsDir string
+var PublishersList string
 var Port int
 
 func init() {
 	flag.StringVar(&ReportsDir, "d", "", "reports directory")
+	flag.StringVar(&PublishersList, "u", "", "publishers list file")
 	flag.IntVar(&Port, "p", 4242, "application port")
 	flag.Parse()
+
+	if len(PublishersList) == 0 {
+		log.Fatal("publishers list file is required")
+	}
+
+	file, err := os.Open(PublishersList)
+	defer file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
