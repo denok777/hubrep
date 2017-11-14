@@ -32,8 +32,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	var found bool
 	for _, name := range users {
-		if name == user {
-			found = true
+		if found = (name == user); found {
 			break
 		}
 	}
@@ -69,7 +68,7 @@ func verifyUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s, _ := store.Get(r, SessionName)
 		if auth, ok := s.Values["auth"].(bool); !ok || !auth {
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}
 
