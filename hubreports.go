@@ -17,7 +17,7 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/list", listHandler)
+	http.Handle("/list", verify(listHandler))
 
 	err := http.ListenAndServe(
 		fmt.Sprintf(":%d", Port),
