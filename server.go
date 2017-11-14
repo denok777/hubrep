@@ -12,9 +12,15 @@ var (
 	store = sessions.NewCookieStore(key)
 )
 
-const SessionName = "reports-app"
+const (
+	SessionName = "reports-app"
 
-func login(w http.ResponseWriter, r *http.Request) {
+	UrlSignIn  = "/signin"
+	UrlReports = "/reports"
+	UrlAuth    = "/auth"
+)
+
+func auth(w http.ResponseWriter, r *http.Request) {
 	s, _ := store.Get(r, SessionName)
 
 	r.ParseForm()
@@ -45,7 +51,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	s.Values["auth"] = true
 	s.Values["publisher"] = user
 	s.Save(r, w)
-	http.Redirect(w, r, "/list", http.StatusFound)
+	http.Redirect(w, r, UrlReports, http.StatusFound)
 }
 
 func signin(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +59,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, "")
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request) {
+func reports(w http.ResponseWriter, r *http.Request) {
 	files, err := FileList(ReportsDir)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
@@ -68,7 +74,7 @@ func verifyUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s, _ := store.Get(r, SessionName)
 		if auth, ok := s.Values["auth"].(bool); !ok || !auth {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			http.Redirect(w, r, UrlSignIn, http.StatusSeeOther)
 			return
 		}
 

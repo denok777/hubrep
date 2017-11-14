@@ -18,9 +18,9 @@ func init() {
 }
 
 func main() {
-	http.Handle("/signin", http.HandlerFunc(signin))
-	http.Handle("/login", http.HandlerFunc(login))
-	http.Handle("/list", verify(listHandler))
+	http.Handle(UrlSignIn, http.HandlerFunc(signin))
+	http.Handle(UrlAuth, http.HandlerFunc(auth))
+	http.Handle(UrlReports, verify(reports))
 
 	err := http.ListenAndServe(
 		fmt.Sprintf(":%d", Port),
