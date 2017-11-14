@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -93,6 +94,24 @@ func download(w http.ResponseWriter, r *http.Request) {
 	fname := strings.TrimSpace(r.URL.Query().Get("report"))
 	if len(fname) == 0 {
 		http.Error(w, "Report filename is required.", http.StatusBadRequest)
+		return
+	}
+
+	fname = path.Clean(fname)
+	fname = strings.Replace(fname, "/", "", -1)
+
+	s, _ := store.Get(r, SessionName)
+	var publisher string
+	var ok bool
+	if publisher, ok = s.Values["publisher"].(string); !ok {
+		// TODO expressive error message
+		http.Error(w, "Critical error", http.StatusInternalServerError)
+		return
+	}
+
+	idx := len(publisher)
+	if len(fname) <= idx || fname[:idx] != publisher {
+		http.Error(w, "File not found.", http.StatusNotFound)
 		return
 	}
 
