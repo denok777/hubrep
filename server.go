@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	for _, file := range files {
-		fmt.Fprintf(w, "%s -- %s\n", file.Name(), file.Time())
-	}
+
+	t, _ := template.ParseFiles("list.html")
+	t.Execute(w, files)
 }
