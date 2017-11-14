@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var (
@@ -89,7 +90,12 @@ func reports(w http.ResponseWriter, r *http.Request) {
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
-	fname := r.URL.Query().Get("report")
+	fname := strings.TrimSpace(r.URL.Query().Get("report"))
+	if len(fname) == 0 {
+		http.Error(w, "Report filename is required.", http.StatusBadRequest)
+		return
+	}
+
 	fpath := ReportsDir + "/" + fname
 
 	file, err := os.Open(fpath)
