@@ -17,12 +17,41 @@ const SessionName = "reports-app"
 func login(w http.ResponseWriter, r *http.Request) {
 	s, _ := store.Get(r, SessionName)
 
-	// TODO
-	// implement authentication
+	r.ParseForm()
+	user := r.Form.Get("user")
+	if len(user) == 0 {
+		http.Error(w, "Username is required", http.StatusBadRequest)
+		return
+	}
+
+	// TODO: list of available users
+	users := []string{
+		"fry",
+		"lila",
+	}
+
+	var found bool
+	for _, name := range users {
+		if name == user {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		http.Error(w, "Unknown user", http.StatusForbidden)
+		return
+	}
 
 	s.Values["auth"] = true
-	s.Values["publisher"] = "publisher"
+	s.Values["publisher"] = user
 	s.Save(r, w)
+	http.Redirect(w, r, "/list", http.StatusFound)
+}
+
+func signin(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("login-form.html")
+	t.Execute(w, "")
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {

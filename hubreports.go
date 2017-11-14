@@ -18,6 +18,7 @@ func init() {
 }
 
 func main() {
+	http.Handle("/signin", http.HandlerFunc(signin))
 	http.Handle("/login", http.HandlerFunc(login))
 	http.Handle("/list", verify(listHandler))
 
