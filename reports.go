@@ -18,19 +18,27 @@ func (r *Report) Time() string {
 	return r.modtime.Format(time.RFC3339)
 }
 
-func FileList(dir string) ([]Report, error) {
+func FileList(dir, publisher string) ([]Report, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return []Report{}, err
 	}
 
+	idx := len(publisher)
 	list := []Report{}
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
+		fname := file.Name()
+		if len(fname) <= idx {
+			continue
+		}
+		if fname[:idx] != publisher {
+			continue
+		}
 		list = append(list, Report{
-			file.Name(),
+			fname,
 			file.ModTime(),
 		})
 	}

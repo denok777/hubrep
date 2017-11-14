@@ -24,32 +24,32 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	s, _ := store.Get(r, SessionName)
 
 	r.ParseForm()
-	user := r.Form.Get("user")
-	if len(user) == 0 {
+	publisher := r.Form.Get("publisher")
+	if len(publisher) == 0 {
 		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: list of available users
-	users := []string{
+	// TODO: list of available publishers
+	publishers := []string{
 		"fry",
 		"lila",
 	}
 
 	var found bool
-	for _, name := range users {
-		if found = (name == user); found {
+	for _, name := range publishers {
+		if found = (name == publisher); found {
 			break
 		}
 	}
 
 	if !found {
-		http.Error(w, "Unknown user", http.StatusForbidden)
+		http.Error(w, "Unknown publisher", http.StatusForbidden)
 		return
 	}
 
 	s.Values["auth"] = true
-	s.Values["publisher"] = user
+	s.Values["publisher"] = publisher
 	s.Save(r, w)
 	http.Redirect(w, r, UrlReports, http.StatusFound)
 }
@@ -66,7 +66,16 @@ func signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func reports(w http.ResponseWriter, r *http.Request) {
-	files, err := FileList(ReportsDir)
+	s, _ := store.Get(r, SessionName)
+	var publisher string
+	var ok bool
+	if publisher, ok = s.Values["publisher"].(string); !ok {
+		// TODO expressive error message
+		http.Error(w, "Critical error", http.StatusInternalServerError)
+		return
+	}
+
+	files, err := FileList(ReportsDir, publisher)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 		return
