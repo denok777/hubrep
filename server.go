@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/gorilla/sessions"
 	"html/template"
+	"io"
 	"net/http"
+	"os"
 )
 
 var (
@@ -87,7 +89,30 @@ func reports(w http.ResponseWriter, r *http.Request) {
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "download")
+	fname := r.URL.Query().Get("report")
+	fpath := ReportsDir + "/" + fname
+
+	file, err := os.Open(fpath)
+	defer file.Close()
+	if err != nil {
+		http.Error(w, "File not found.", http.StatusNotFound)
+		return
+	}
+
+	var fi os.FileInfo
+	if fi, err = file.Stat(); err != nil {
+		http.Error(w, "Critical error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set(
+		"Content-Disposition",
+		fmt.Sprintf("attachment; filename=%s", fname),
+	)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", fi.Size()))
+
+	io.Copy(w, file)
 }
 
 func verifyUser(h http.Handler) http.Handler {
