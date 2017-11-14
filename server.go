@@ -55,6 +55,12 @@ func auth(w http.ResponseWriter, r *http.Request) {
 }
 
 func signin(w http.ResponseWriter, r *http.Request) {
+	s, _ := store.Get(r, SessionName)
+	if auth, ok := s.Values["auth"].(bool); ok && auth {
+		http.Redirect(w, r, UrlReports, http.StatusSeeOther)
+		return
+	}
+
 	t, _ := template.ParseFiles("login-form.html")
 	t.Execute(w, "")
 }
