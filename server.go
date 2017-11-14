@@ -15,9 +15,10 @@ var (
 const (
 	SessionName = "reports-app"
 
-	UrlSignIn  = "/signin"
-	UrlReports = "/reports"
-	UrlAuth    = "/auth"
+	UrlSignIn   = "/signin"
+	UrlAuth     = "/auth"
+	UrlReports  = "/reports"
+	UrlDownload = "/download"
 )
 
 func auth(w http.ResponseWriter, r *http.Request) {
@@ -83,6 +84,10 @@ func reports(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("list.html")
 	t.Execute(w, files)
+}
+
+func download(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "download")
 }
 
 func verifyUser(h http.Handler) http.Handler {

@@ -7,7 +7,7 @@
 <table>
 {{range .}}
 	<tr>
-		<td>{{ .Name }}</td>
+		<td><a href="/download?report={{ .Name }}">{{ .Name }}</a></td>
 		<td>{{ .Time }}</td>
 	</tr>
 {{end}}
