@@ -16,7 +16,7 @@ func (r *Report) Name() string {
 }
 
 func (r *Report) Time() string {
-	return r.modtime.Format(time.RFC3339)
+	return r.modtime.Format("2006-01-02 15:04:05")
 }
 
 type Reports []Report
