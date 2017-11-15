@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/gorilla/sessions"
 	"html/template"
@@ -35,10 +36,22 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: list of available publishers
-	publishers := []string{
-		"fry",
-		"lila",
+	publishers := []string{}
+	file, err := os.Open(PublishersList)
+	if err != nil {
+		http.Error(w, "Critical error", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		publishers = append(publishers, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		http.Error(w, "Critical error", http.StatusInternalServerError)
+		return
 	}
 
 	var found bool
