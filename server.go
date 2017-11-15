@@ -26,6 +26,10 @@ const (
 	UrlDownload = "/download"
 )
 
+func index(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, UrlReports, http.StatusFound)
+}
+
 func auth(w http.ResponseWriter, r *http.Request) {
 	s, _ := store.Get(r, SessionName)
 

@@ -31,6 +31,7 @@ func init() {
 }
 
 func main() {
+	http.Handle("/", http.HandlerFunc(index))
 	http.Handle(UrlSignIn, http.HandlerFunc(signin))
 	http.Handle(UrlAuth, http.HandlerFunc(auth))
 	http.Handle(UrlReports, verify(reports))
