@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"sort"
 	"time"
 )
 
@@ -18,14 +19,28 @@ func (r *Report) Time() string {
 	return r.modtime.Format(time.RFC3339)
 }
 
-func FileList(dir, publisher string) ([]Report, error) {
+type Reports []Report
+
+func (r Reports) Len() int {
+	return len(r)
+}
+
+func (r Reports) Less(i, j int) bool {
+	return r[i].modtime.After(r[j].modtime)
+}
+
+func (r Reports) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}
+
+func FileList(dir, publisher string) (Reports, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return []Report{}, err
 	}
 
 	idx := len(publisher)
-	list := []Report{}
+	list := make(Reports, 0)
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -42,6 +57,8 @@ func FileList(dir, publisher string) ([]Report, error) {
 			file.ModTime(),
 		})
 	}
+
+	sort.Sort(list)
 
 	return list, nil
 }
