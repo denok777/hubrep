@@ -21,6 +21,7 @@ const (
 	SessionName = "reports-app"
 
 	UrlSignIn   = "/signin"
+	UrlLogout   = "/logout"
 	UrlAuth     = "/auth"
 	UrlReports  = "/reports"
 	UrlDownload = "/download"
@@ -74,6 +75,17 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	s.Values["publisher"] = publisher
 	s.Save(r, w)
 	http.Redirect(w, r, UrlReports, http.StatusFound)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	s, _ := store.Get(r, SessionName)
+	if auth, ok := s.Values["auth"].(bool); ok && auth {
+		s.Values["auth"] = false
+		s.Values["publisher"] = ""
+		s.Save(r, w)
+	}
+
+	http.Redirect(w, r, UrlSignIn, http.StatusSeeOther)
 }
 
 func signin(w http.ResponseWriter, r *http.Request) {
